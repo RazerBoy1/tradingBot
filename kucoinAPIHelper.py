@@ -1,5 +1,7 @@
 import requests, certifi, json, time, base64, hmac, hashlib
 
+from .exceptions import KucoinAPIException, KucoinRequestException, KucoinResolutionException
+
 class Client(object):
     API_URL = 'https://api.kucoin.com'
     API_VERSION = 'v1'
