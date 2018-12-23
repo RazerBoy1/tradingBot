@@ -6,11 +6,15 @@ class Client(object):
     API_URL = 'https://api.kucoin.com'
     API_VERSION = 'v1'
     _language = 'en-US'
+    _auth_file = None
 
     def __init__(self, api_key=None, api_secret=None, request_params=None, language=None):
         self.API_KEY = api_key
         self.API_SECRET = api_secret
         self.request_params = requests_params
+
+        if not key and not secret:
+            self._auth_file = _read_authentication_file()
 
         if not key:
             self.API_KEY = _get_key()
@@ -24,10 +28,10 @@ class Client(object):
         self.session = self._init_session()
 
     def _get_key(self):
-        return _read_authentication_file()[0].rstrip()
+        return self._auth_file[0].rstrip()
 
     def _get_secret(self):
-        return _read_authentication_file()[1].rstrip()
+        return self._auth_file[1].rstrip()
 
     def _read_authentication_file(self, path=None, name=None):
         location = 'auth.txt'
@@ -347,4 +351,3 @@ headers = {
 
 r = requests.post('https://api.kucoin.com/v1/user/info', headers=headers)
 print(r._content)
-
