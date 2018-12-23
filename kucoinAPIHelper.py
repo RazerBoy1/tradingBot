@@ -14,13 +14,13 @@ class Client(object):
         self.request_params = requests_params
 
         if not key and not secret:
-            self._auth_file = _read_authentication_file()
+            self._auth_file = self._read_authentication_file()
 
         if not key:
-            self.API_KEY = _get_key()
+            self.API_KEY = self._get_key()
 
         if not secret:
-            self.API_SECRET = _get_secret()
+            self.API_SECRET = self._get_secret()
 
         if language:
             self._language = language
@@ -351,3 +351,4 @@ headers = {
 
 r = requests.post('https://api.kucoin.com/v1/user/info', headers=headers)
 print(r._content)
+
