@@ -1,6 +1,4 @@
-import requests, certifi, json, time, base64, hmac, hashlib
-
-from .exceptions import KucoinAPIException, KucoinRequestException, KucoinResolutionException
+import requests, certifi, json, time, base64, hmac, hashlib, exceptions
 
 class Client(object):
     API_URL = 'https://api.kucoin.com'
@@ -8,18 +6,41 @@ class Client(object):
     _language = 'en-US'
     _auth_file = None
 
+    SIDE_BUY = 'BUY'
+    SIDE_SELL = 'SELL'
+
+    RESOLUTION_1MINUTE = '1'
+    RESOLUTION_5MINUTES = '5'
+    RESOLUTION_15MINUTES = '15'
+    RESOLUTION_30MINUTES = '30'
+    RESOLUTION_1HOUR = '60'
+    RESOLUTION_8HOURS = '480'
+    RESOLUTION_1DAY = 'D'
+    RESOLUTION_1WEEK = 'W'
+
+    _resolution_map = {
+        RESOLUTION_1MINUTE: '1min',
+        RESOLUTION_5MINUTES: '5min',
+        RESOLUTION_15MINUTES: '15min',
+        RESOLUTION_30MINUTES: '30min',
+        RESOLUTION_1HOUR: '1hour',
+        RESOLUTION_8HOURS: '8hour',
+        RESOLUTION_1DAY: '1day',
+        RESOLUTION_1WEEK: '1week',
+    }
+
     def __init__(self, api_key=None, api_secret=None, request_params=None, language=None):
         self.API_KEY = api_key
         self.API_SECRET = api_secret
-        self.request_params = requests_params
+        self._request_params = request_params
 
-        if not key and not secret:
+        if api_key is None and api_secret is None:
             self._auth_file = self._read_authentication_file()
 
-        if not key:
+        if api_key is None:
             self.API_KEY = self._get_key()
 
-        if not secret:
+        if api_secret is None:
             self.API_SECRET = self._get_secret()
 
         if language:
@@ -62,17 +83,17 @@ class Client(object):
 
         return session
 
-    def _get(self, path, **args):
-        return self._request('get', path, **args)
+    def _get(self, path, signed=False, **args):
+        return self._request('get', path, signed, **args)
 
-    def _post(self, path, **args):
-        return self._request('post', path, **args)
+    def _post(self, path, signed=False, **args):
+        return self._request('post', path, signed, **args)
 
-    def _put(self, path, **args):
-        return self._request('put', path, **args)
+    def _put(self, path, signed=False, **args):
+        return self._request('put', path, signed, **args)
 
-    def _delete(self, path, **args):
-        return self._request('delete', path, **args)
+    def _delete(self, path, signed=False, **args):
+        return self._request('delete', path, signed, **args)
 
     def _create_path(self, method, path):
         return '/{}/{}'.format(self.API_VERSION, path)
@@ -83,8 +104,8 @@ class Client(object):
     def _request(self, method, path, signed, **args):
         args['timeout'] = 10
 
-        if self._requests_params:
-            args.update(self._requests_params)
+        if self._request_params:
+            args.update(self._request_params)
 
         args['data'] = args.get('data', {})
         args['headers'] = args.get('headers', {})
@@ -93,7 +114,7 @@ class Client(object):
         uri = self._create_uri(full_path)
 
         if signed:
-            args['headers']['KC-API-NONCE'] = str(_get_nonce)
+            args['headers']['KC-API-NONCE'] = str(self._get_nonce)
             args['headers']['KC-API-SIGNATURE'] = self._generate_signature(full_path, args['data'], nonce)
 
         if args['data'] and method == 'get':
@@ -286,69 +307,3 @@ class Client(object):
             data['since'] = since
 
         return self._get('open/deal-orders', False, data=data)
-
-
-
-
-
-
-'''
-
-TEST CRAP
-
-'''
-
-
-
-def _get_key():
-    return _read_authentication_file()[0].rstrip()
-
-def _get_secret():
-    return _read_authentication_file()[1].rstrip()
-
-def _read_authentication_file(name=None, path=None):
-    location = 'auth.txt'
-
-    if name:
-        location = name
-    if path:
-        location = '{}/{}'.format(path, location)
-    if path and name:
-        location = '{}/{}'.format(path, name)
-
-    f = open(location, 'r')
-    auth_file = f.readlines()
-    f.close()
-
-    return auth_file
-
-def create_sha256_signature(secret, to_sign):
-    signature = hmac.new(secret.encode('utf-8'), base64.b64encode(to_sign.encode('utf-8')), hashlib.sha256)
-    return signature.hexdigest()
-
-def get_nonce():
-    return int(time.time() * 1000)
-
-
-bla = _read_authentication_file(None, None)
-
-
-
-nonce = get_nonce()
-host = 'https://api.kucoin.com'
-api_version = '/v1/'
-endpoint = 'user/info'
-query_string = ''
-url_to_sign = '{}{}/{}/{}'.format(api_version, endpoint, str(nonce), query_string)
-
-signature = create_sha256_signature(bla[1].rstrip(), url_to_sign)
-
-headers = {
-    'KC-API-KEY': _get_key(),
-    'KC-API-NONCE': str(nonce),
-    'KC-API-SIGNATURE': _get_secret()
-}
-
-r = requests.post('https://api.kucoin.com/v1/user/info', headers=headers)
-print(r._content)
-
