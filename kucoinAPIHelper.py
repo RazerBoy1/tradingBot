@@ -1,4 +1,5 @@
-import requests, certifi, json, time, base64, hmac, hashlib, exceptions
+import requests, certifi, json, time, base64, hmac, hashlib
+from exceptions import KucoinAPIException, KucoinRequestException, KucoinResolutionException
 
 class Client(object):
     API_URL = 'https://api.kucoin.com'
@@ -36,13 +37,10 @@ class Client(object):
 
         if api_key is None and api_secret is None:
             self._auth_file = self._read_authentication_file()
-
         if api_key is None:
             self.API_KEY = self._get_key()
-
         if api_secret is None:
             self.API_SECRET = self._get_secret()
-
         if language:
             self._language = language
 
@@ -114,7 +112,8 @@ class Client(object):
         uri = self._create_uri(full_path)
 
         if signed:
-            args['headers']['KC-API-NONCE'] = str(self._get_nonce)
+            nonce = str(self._get_nonce())
+            args['headers']['KC-API-NONCE'] = nonce
             args['headers']['KC-API-SIGNATURE'] = self._generate_signature(full_path, args['data'], nonce)
 
         if args['data'] and method == 'get':
