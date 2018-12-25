@@ -306,3 +306,36 @@ class Client(object):
             data['since'] = since
 
         return self._get('open/deal-orders', False, data=data)
+
+    def get_order_book(self, symbol, group=None, limit=None):
+        data = {
+            'symbol': symbol
+        }
+        if group:
+            data['group'] = group
+        if limit:
+            data['limit'] = limit
+
+        return self._get('open/orders', False, data=data)
+
+    def get_buy_orders(self, symbol, group=None, limit=None):
+        data = {
+            'symbol': symbol
+        }
+        if group:
+            data['group'] = group
+        if limit:
+            data['limit'] = limit
+
+        return self._get('open/orders-buy', False, data=data)
+
+    def get_sell_orders(self, symbol, group=None, limit=None):
+        data = {
+            'symbol': symbol
+        }
+        if group:
+            data['group'] = group
+        if limit:
+            data['limit'] = limit
+
+        return self._get('open/orders-sell', False, data=data)
