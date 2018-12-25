@@ -10,26 +10,6 @@ class Client(object):
     SIDE_BUY = 'BUY'
     SIDE_SELL = 'SELL'
 
-    RESOLUTION_1MINUTE = '1'
-    RESOLUTION_5MINUTES = '5'
-    RESOLUTION_15MINUTES = '15'
-    RESOLUTION_30MINUTES = '30'
-    RESOLUTION_1HOUR = '60'
-    RESOLUTION_8HOURS = '480'
-    RESOLUTION_1DAY = 'D'
-    RESOLUTION_1WEEK = 'W'
-
-    _resolution_map = {
-        RESOLUTION_1MINUTE: '1min',
-        RESOLUTION_5MINUTES: '5min',
-        RESOLUTION_15MINUTES: '15min',
-        RESOLUTION_30MINUTES: '30min',
-        RESOLUTION_1HOUR: '1hour',
-        RESOLUTION_8HOURS: '8hour',
-        RESOLUTION_1DAY: '1day',
-        RESOLUTION_1WEEK: '1week',
-    }
-
     def __init__(self, api_key=None, api_secret=None, request_params=None, language=None):
         self.API_KEY = api_key
         self.API_SECRET = api_secret
