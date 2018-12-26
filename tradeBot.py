@@ -83,7 +83,6 @@ class tradeBot(object):
                 self.h.create_buy_order(self._symbol, buy_price, amount_to_buy)
             elif balanceB > 1:
                 self.h.create_sell_order(self._symbol, sell_price, amount_to_sell)
-                a = 1
 
             time.sleep(0.25)
 
