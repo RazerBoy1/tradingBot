@@ -1,4 +1,4 @@
-import time
+import time, math
 from decimal import Decimal, getcontext
 from kucoinAPIHelper import Client
 
@@ -49,7 +49,7 @@ class tradeBot(object):
         dec = self.get_decimal_representation(input_number)
         return dec.next_minus()
 
-    def get_optimal_buy_price(self, order_book, target_price): # undercutamo en druzga??? maybe keep this for myself? YEEEES YEEEEEEEEEEESSSSSSS
+    def get_optimal_buy_price(self, order_book, target_price):
         for order in order_book['BUY']:
             if order[0] < target_price:
                 return self.decrement_one_at_last_digit(order[0])
@@ -63,6 +63,10 @@ class tradeBot(object):
 
         return target_price
 
+    def round_down(self, n, decimals=6):
+        multiplier = 10 ** decimals
+        return math.floor(n * multiplier) / multiplier
+
     def trade_loop(self):
         while (True):
             balances = self.get_coin_balances()
@@ -74,28 +78,16 @@ class tradeBot(object):
             balanceA = balances[self.coinA]['balance']
             balanceB = balances[self.coinB]['balance']
 
-            to_buy = balanceB * (1 + self._percent_per_trade)
-
-            amount_to_buy = round(balanceB * (1 + self._percent_per_trade), self.DECIMAL_PRECISION)
-            amount_to_sell = round(balanceA * (1 + self._percent_per_trade), self.DECIMAL_PRECISION)
+            amount_to_buy = self.round_down(balanceB / (1 - self._percent_per_trade), self.DECIMAL_PRECISION)
+            amount_to_sell = round(balanceA, 6)
 
             if balanceA > 1:
                 self.h.create_buy_order(self._symbol, buy_price, amount_to_buy)
-            elif balanceB > 1:
+            if balanceB > 1:
                 self.h.create_sell_order(self._symbol, sell_price, amount_to_sell)
 
             time.sleep(0.25)
 
-t = tradeBot('USDT-PAX', 0.05)
+t = tradeBot('USDT-PAX', 0.1)
 
-
-
-
-'''
-orders_dealt = self.h.get_symbol_dealt_orders('KCS-ETH')
-trading_symbols = self.h.get_trading_symbols('DAI')
-buy_orders = self.h.get_active_orders('KCS-ETH')
-
-a = h.get_recent_orders("ONT-ETH", 10)
-h.create_buy_order('GO-KCS', 0.001, 62783.4875) #Ko je cena 0.001 kup 62783.4875 GOja
-'''
+# Ne undercutat yourself bitch
