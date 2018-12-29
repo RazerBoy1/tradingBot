@@ -287,17 +287,6 @@ class Client(object):
 
         return self._get('open/deal-orders', False, data=data)
 
-    def get_order_book(self, symbol, group=None, limit=None):
-        data = {
-            'symbol': symbol
-        }
-        if group:
-            data['group'] = group
-        if limit:
-            data['limit'] = limit
-
-        return self._get('open/orders', False, data=data)
-
     def get_trading_symbols(self, market=None):
         data = {}
         if market:
