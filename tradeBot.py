@@ -11,8 +11,8 @@ class tradeBot(object):
         self._percent_per_trade = percent_per_trade
 
         pair = self.get_trading_pair()
-        self.sell_coin = pair[0]
-        self.buy_coin = pair[1]
+        self.buy_coin = pair[0]
+        self.sell_coin = pair[1]
 
         self.trade_loop()
 
@@ -20,8 +20,8 @@ class tradeBot(object):
         return self._symbol.split('-')
 
     def get_coin_balances(self):
-        stable_coin_balances = {self.sell_coin: {'balance': 0.0},
-                                self.buy_coin: {'balance': 0.0}}
+        stable_coin_balances = {self.buy_coin: {'balance': 0.0},
+                                self.sell_coin: {'balance': 0.0}}
 
         balances = self.h.get_all_balances()
 
@@ -81,16 +81,18 @@ class tradeBot(object):
                 buy_price = self.get_optimal_buy_price(order_book, 1 - self._percent_per_trade)
                 sell_price = self.get_optimal_sell_price(order_book, 1 + self._percent_per_trade)
 
-                buy_balance = balances[self.buy_coin]['balance']
                 sell_balance = balances[self.sell_coin]['balance']
+                buy_balance = balances[self.buy_coin]['balance']
 
-                amount_to_buy = self.round_down(buy_balance / (1 - self._percent_per_trade), self.DECIMAL_PRECISION)
-                amount_to_sell = round(sell_balance, 6)
+                amount_to_buy = self.round_down(sell_balance / (1 - self._percent_per_trade), self.DECIMAL_PRECISION)
+                amount_to_sell = round(buy_balance, 6)
 
                 if sell_balance > 1.0:
                     self.h.create_buy_order(self._symbol, buy_price, amount_to_buy)
+                    print("Trying to buy {} {} for price {}".format(amount_to_buy, self.buy_coin, buy_price))
                 if buy_balance > 1.0:
                     self.h.create_sell_order(self._symbol, sell_price, amount_to_sell)
+                    print("Trying to sell {} {} for price {}".format(amount_to_sell, self.sell_coin, sell_price))
 
             time.sleep(0.5)
 
