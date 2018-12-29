@@ -95,5 +95,3 @@ class tradeBot(object):
             time.sleep(0.5)
 
 t = tradeBot('USDT-PAX', 0.005)
-
-# Ne undercutat yourself bitch
