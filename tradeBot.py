@@ -1,6 +1,6 @@
 import time, math
 from decimal import Decimal, getcontext
-from kusell_coinPIHelper import Client
+from kucoinAPIHelper import Client
 
 class tradeBot(object):
     DECIMAL_PRECISION = 6
@@ -95,3 +95,5 @@ class tradeBot(object):
             time.sleep(0.5)
 
 t = tradeBot('USDT-PAX', 0.005)
+
+# Ne undercutat yourself bitch
