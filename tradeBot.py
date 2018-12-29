@@ -14,8 +14,6 @@ class tradeBot(object):
         self.sell_coin = pair[0]
         self.buy_coin = pair[1]
 
-        self.activeOrders = {}
-
         self.trade_loop()
 
     def get_trading_pair(self):
@@ -97,5 +95,3 @@ class tradeBot(object):
             time.sleep(0.5)
 
 t = tradeBot('USDT-PAX', 0.005)
-
-# Ne undercutat yourself bitch
