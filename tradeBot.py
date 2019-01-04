@@ -73,7 +73,13 @@ class tradeBot(object):
 
     def trade_loop(self):
         while (True):
-            balances = self.get_coin_balances()
+            while (True):
+                try:
+                    balances = self.get_coin_balances()
+                    break
+                except:
+                    print("The client and server timestamps were more than 2 seconds off. Probably... ")
+                    continue
 
             if self.balance_above_one_dollar(balances):
                 order_book = self.h.get_order_book(self._symbol)
@@ -85,15 +91,24 @@ class tradeBot(object):
                 buy_balance = balances[self.buy_coin]['balance']
 
                 amount_to_buy = self.round_down(sell_balance / (1 - self._percent_per_trade), self.DECIMAL_PRECISION)
-                amount_to_sell = round(buy_balance, 6)
+                amount_to_sell = self.round_down(buy_balance, self.DECIMAL_PRECISION)
 
-                if sell_balance > 1.0:
-                    self.h.create_buy_order(self._symbol, buy_price, amount_to_buy)
-                    print("Trying to buy {} {} for price {}".format(amount_to_buy, self.buy_coin, buy_price))
-                if buy_balance > 1.0:
-                    self.h.create_sell_order(self._symbol, sell_price, amount_to_sell)
-                    print("Trying to sell {} {} for price {}".format(amount_to_sell, self.sell_coin, sell_price))
+                while (True):
+                    try:
+                        if sell_balance > 1.0:
+                            self.h.create_buy_order(self._symbol, buy_price, amount_to_buy)
+                            print("Trying to buy {} {} for price {}".format(amount_to_buy, self.buy_coin, buy_price))
+                        if buy_balance > 1.0:
+                            self.h.create_sell_order(self._symbol, sell_price, amount_to_sell)
+                            print("Trying to sell {} {} for price {}".format(amount_to_sell, self.sell_coin, sell_price))
+
+                        break
+                    except:
+                        print("The client and server timestamps were more than 2 seconds off. Probably... ")
+                        continue
 
             time.sleep(0.5)
 
 t = tradeBot('USDT-PAX', 0.005)
+
+# Ne undercutat yourself bitch
