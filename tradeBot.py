@@ -78,7 +78,8 @@ class tradeBot(object):
                     balances = self.get_coin_balances()
                     break
                 except:
-                    print("The client and server timestamps were more than 2 seconds off. Probably... ")
+                    print("Getting client balance failed. The client and server timestamps were more than 2 seconds off. Probably... ")
+                    time.sleep(0.5)
                     continue
 
             if self.balance_above_one_dollar(balances):
@@ -104,11 +105,10 @@ class tradeBot(object):
 
                         break
                     except:
-                        print("The client and server timestamps were more than 2 seconds off. Probably... ")
+                        print("Setting sell/buy order failed. The client and server timestamps were more than 2 seconds off. Probably... ")
+                        time.sleep(0.5)
                         continue
 
             time.sleep(0.5)
 
 t = tradeBot('USDT-PAX', 0.005)
-
-# Ne undercutat yourself bitch
