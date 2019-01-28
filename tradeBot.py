@@ -39,17 +39,12 @@ class tradeBot(object):
 
         return False
 
-    def get_optimal_buy_price(self, order_book, target_price):
-        for order in order_book['BUY']:
-            if order[0] < target_price:
-                return self._decrement_one_at_last_digit(order[0])
-
-        return target_price
-
-    def get_optimal_sell_price(self, order_book, target_price):
-        for order in order_book['SELL']:
-            if order[0] > target_price:
+    def get_optimal_price(self, order_book, target_price, order_type):
+        for order in order_book[order_type]:
+            if order_type == 'SELL' and order[0] > target_price:
                 return self._increment_one_at_last_digit(order[0])
+            elif order_type == 'BUY' and order[0] < target_price:
+                return self._decrement_one_at_last_digit(order[0])
 
         return target_price
 
@@ -85,8 +80,8 @@ class tradeBot(object):
             if self.balance_above_one_dollar(balances):
                 order_book = self.h.get_order_book(self._symbol)
 
-                buy_price = self.get_optimal_buy_price(order_book, 1 - self._percent_per_trade)
-                sell_price = self.get_optimal_sell_price(order_book, 1 + self._percent_per_trade)
+                buy_price = self.get_optimal_price(order_book, 1 - self._percent_per_trade, 'BUY')
+                sell_price = self.get_optimal_price(order_book, 1 + self._percent_per_trade, 'SELL')
 
                 sell_balance = balances[self.sell_coin]['balance']
                 buy_balance = balances[self.buy_coin]['balance']
