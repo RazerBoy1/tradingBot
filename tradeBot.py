@@ -73,7 +73,7 @@ class tradeBot(object):
                     balances = self.get_coin_balances()
                     break
                 except:
-                    print("Getting client balance failed. The client and server timestamps were more than 2 seconds off. Probably... ")
+                    print("Getting client balance failed. The client and server timestamps were more than 2 seconds off or the internet connection failed.")
                     time.sleep(0.5)
                     continue
 
@@ -100,7 +100,7 @@ class tradeBot(object):
 
                         break
                     except:
-                        print("Setting sell/buy order failed. The client and server timestamps were more than 2 seconds off. Probably... ")
+                        print("Setting sell/buy order failed. The client and server timestamps were more than 2 seconds off or the internet connection failed.")
                         time.sleep(0.5)
                         continue
 
