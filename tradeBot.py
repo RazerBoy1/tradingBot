@@ -54,7 +54,7 @@ class tradeBot(object):
 
     def _get_decimal_representation(self, input_number):
         dec = Decimal(input_number)
-        getcontext().prec = 6
+        getcontext().prec = self.DECIMAL_PRECISION
 
         return dec
 
